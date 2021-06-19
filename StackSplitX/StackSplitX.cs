@@ -187,8 +187,7 @@ namespace StackSplitX
         /// <param name="e">The event data.</param>
         private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            this.CurrentUpdateTick += 1;
-            if (this.CurrentUpdateTick >= 60)
+            if (++this.CurrentUpdateTick >= 60)
                 this.CurrentUpdateTick = 0;
 
             // If TickResizedOn isn't -1 then there was a resize event, so do the resize next tick.
