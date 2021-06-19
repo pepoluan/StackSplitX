@@ -8,6 +8,22 @@ using StardewValley.Menus;
 
 namespace StackSplitX
 {
+    internal class OtherModInterceptable
+        {
+        internal static IModHelper Helper;
+        internal string UniqueID;
+        internal string MenuClass;
+        internal Type HandlerSameAs;
+        internal OtherModInterceptable(string modID, string className, Type sameAs) {
+            UniqueID = modID;
+            MenuClass = className;
+            HandlerSameAs = sameAs;
+            }
+        internal bool IsLoaded() {
+            return Helper.ModRegistry.IsLoaded(UniqueID);
+            }
+        }
+
     public class StackSplitX : Mod
     {
         /// <summary>Are we subscribed to the events listened to while a handler is active.</summary>
@@ -15,6 +31,8 @@ namespace StackSplitX
 
         /// <summary>Handlers mapped to the type of menu they handle.</summary>
         private Dictionary<Type, IMenuHandler> MenuHandlers;
+        private Dictionary<string, IMenuHandler> MenuHandlersByName;
+        private List<OtherModInterceptable> OtherMods;
 
         /// <summary>The handler for the current menu.</summary>
         private IMenuHandler CurrentMenuHandler;
@@ -46,6 +64,12 @@ namespace StackSplitX
                 { typeof(CraftingPage), new CraftingMenuHandler(helper, this.Monitor) },
                 { typeof(JunimoNoteMenu), new JunimoNoteMenuHandler(helper, this.Monitor) }
             };
+
+            this.MenuHandlersByName = new Dictionary<string, IMenuHandler>();
+            OtherModInterceptable.Helper = helper;
+            this.OtherMods = new List<OtherModInterceptable> {
+                new OtherModInterceptable("CJBok.ItemSpawner", "CJBItemSpawner.Framework.ItemMenu", typeof(ItemGrabMenu))
+                };
         }
 
         /// <summary>Subscribes to the events we care about when a handler is active.</summary>
@@ -112,22 +136,24 @@ namespace StackSplitX
 
 
             // switch the currently handler to the one for the new menu type
-            this.Monitor.DebugLog($"Menu changed from {e.OldMenu} to {e.NewMenu}");
-            var newMenuType = e.NewMenu.GetType();
-            if (this.MenuHandlers.ContainsKey(newMenuType))
-            {
+            var nuMenu = e.NewMenu;
+            Log.TraceIfD($"Menu changed from {e.OldMenu} to {nuMenu}");
+            if (
+                this.MenuHandlers.TryGetValue(nuMenu.GetType(), out IMenuHandler handler)
+                || this.MenuHandlersByName.TryGetValue(nuMenu.ToString(), out handler)
+                ) {
+                Log.Trace($"{nuMenu} intercepted");
                 // Close the current one of it's valid
-                if (this.CurrentMenuHandler != null)
-                {
+                if (this.CurrentMenuHandler != null) {
                     this.CurrentMenuHandler.Close();
-                }
+                    }
 
-                this.CurrentMenuHandler = this.MenuHandlers[newMenuType];
-                this.CurrentMenuHandler.Open(e.NewMenu);
+                this.CurrentMenuHandler = handler;
+                this.CurrentMenuHandler.Open(nuMenu);
 
                 SubscribeEvents();
+                }
             }
-        }
 
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -193,5 +219,17 @@ namespace StackSplitX
             // tell the current handler to draw the split menu if it's active
             this.CurrentMenuHandler?.Draw(Game1.spriteBatch);
         }
-    }
+
+        private void OnGameLaunched(object semder, GameLaunchedEventArgs e) {
+            InterceptOtherMods();
+            }
+
+        private void InterceptOtherMods() {
+            foreach (var om in OtherMods) {
+                if (!om.IsLoaded()) continue;
+                Log.Debug($"{om.UniqueID} detected, registering {om.MenuClass}");
+                this.MenuHandlersByName[om.MenuClass] = this.MenuHandlers[om.HandlerSameAs];
+                }
+            }
+        }
 }
