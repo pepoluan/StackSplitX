@@ -52,7 +52,7 @@ namespace StackSplitX.MenuHandlers
 
             if (!ChangeTabs(this.CurrentTab))
             {
-                this.Monitor.DebugLog($"Could not change to tab {this.CurrentTab}", LogLevel.Warn);
+                Log.Trace($"Could not change to tab {this.CurrentTab}");
             }
         }
 

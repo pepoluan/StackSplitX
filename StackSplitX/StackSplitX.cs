@@ -32,6 +32,8 @@ namespace StackSplitX
         /// <param name="helper">Mod helper.</param>
         public override void Entry(IModHelper helper)
         {
+            Log.Init(this);
+
             helper.Events.Display.MenuChanged += OnMenuChanged;
             helper.Events.Display.WindowResized += OnWindowResized;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;

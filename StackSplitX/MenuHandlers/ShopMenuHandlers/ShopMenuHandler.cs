@@ -25,7 +25,7 @@ namespace StackSplitX.MenuHandlers
         /// <returns>If the input was handled or consumed.</returns>
         protected override EInputHandled InventoryClicked()
         {
-            this.CurrentShopAction = SellAction.Create(this.Helper.Reflection, this.Monitor, this.NativeMenu, this.ClickItemLocation);
+            this.CurrentShopAction = SellAction.Create(this.Helper.Reflection, this.NativeMenu, this.ClickItemLocation);
             return TryOpenSplitMenu(this.CurrentShopAction);
         }
 
@@ -33,7 +33,7 @@ namespace StackSplitX.MenuHandlers
         /// <returns>If the input was handled or consumed.</returns>
         protected override EInputHandled OpenSplitMenu()
         {
-            this.CurrentShopAction = BuyAction.Create(this.Helper.Reflection, this.Monitor, this.NativeMenu, this.ClickItemLocation);
+            this.CurrentShopAction = BuyAction.Create(this.Helper.Reflection, this.NativeMenu, this.ClickItemLocation);
             return TryOpenSplitMenu(this.CurrentShopAction);
         }
 

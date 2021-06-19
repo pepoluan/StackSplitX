@@ -61,7 +61,7 @@ namespace StackSplitX.MenuHandlers
             base.CloseSplitMenu();
 
             if (this.CallbacksHooked)
-                this.Monitor.Log("[CloseSplitMenu] Callbacks shouldn't be hooked", LogLevel.Error);
+                Log.Error("[CloseSplitMenu] Callbacks shouldn't be hooked");
         }
 
         /// <summary>Called when the current handler loses focus when the split menu is open, allowing it to cancel the operation or run the default behaviour.</summary>
@@ -102,7 +102,7 @@ namespace StackSplitX.MenuHandlers
             }
             catch (Exception e)
             {
-                this.Monitor.Log($"Failed to get properties from native menu: {e}", LogLevel.Error);
+                Log.Error($"Failed to get properties from native menu: {e}");
                 return EInputHandled.NotHandled;
             }
 
@@ -203,7 +203,7 @@ namespace StackSplitX.MenuHandlers
         {
             if (this.HoverItem != null && this.TotalItems > 0)
             {
-                this.Monitor.Log("Reverting items", LogLevel.Trace);
+                Log.Trace("Reverting items");
                 this.HoverItem.Stack = this.TotalItems;
 
                 RestoreNativeCallbacks();
@@ -233,7 +233,7 @@ namespace StackSplitX.MenuHandlers
             }
             catch (Exception e)
             {
-                this.Monitor.Log($"Failed to hook ItemGrabMenu callbacks: {e}", LogLevel.Error);
+                Log.Error($"Failed to hook ItemGrabMenu callbacks: {e}");
                 return false;
             }
             return true;
@@ -257,7 +257,7 @@ namespace StackSplitX.MenuHandlers
             }
             catch (Exception e)
             {
-                this.Monitor.Log($"Failed to restore native callbacks: {e}", LogLevel.Error);
+                Log.Error($"Failed to restore native callbacks: {e}");
             }
         }
     }

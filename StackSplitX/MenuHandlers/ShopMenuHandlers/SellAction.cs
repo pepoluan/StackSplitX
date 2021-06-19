@@ -15,8 +15,8 @@ namespace StackSplitX.MenuHandlers
         /// <param name="monitor">Monitor for logging.</param>
         /// <param name="menu">The native shop menu.</param>
         /// <param name="item">The item to buy.</param>
-        public SellAction(IReflectionHelper reflection, IMonitor monitor, ShopMenu menu, Item item)
-            : base(reflection, monitor, menu, item)
+        public SellAction(IReflectionHelper reflection, ShopMenu menu, Item item)
+            : base(reflection, menu, item)
         {
             // Default amount
             this.Amount = (int)Math.Ceiling(this.ClickedItem.Stack / 2.0);
@@ -39,7 +39,7 @@ namespace StackSplitX.MenuHandlers
             // Sell item
             int price = CalculateSalePrice(this.ClickedItem, amount);
             ShopMenu.chargePlayer(Game1.player, this.ShopCurrencyType, price);
-            this.Monitor.Log($"Charged player {price} for {amount} of {this.ClickedItem.Name}", LogLevel.Trace);
+            Log.Trace($"Charged player {price} for {amount} of {this.ClickedItem.Name}");
 
             // Update the stack amount/remove the item
             var actualInventory = this.Inventory.actualInventory;
@@ -105,11 +105,11 @@ namespace StackSplitX.MenuHandlers
         /// <param name="shopMenu">Native shop menu.</param>
         /// <param name="mouse">Mouse position.</param>
         /// <returns>The instance or null if no valid item was selected.</returns>
-        public new static ShopAction Create(IReflectionHelper reflection, IMonitor monitor, ShopMenu shopMenu, Point mouse)
+        public static ShopAction Create(IReflectionHelper reflection, ShopMenu shopMenu, Point mouse)
         {
             var inventory = shopMenu.inventory;
             var item = inventory.getItemAt(mouse.X, mouse.Y);
-            return item != null ? new SellAction(reflection, monitor, shopMenu, item) : null;
+            return item != null ? new SellAction(reflection, shopMenu, item) : null;
         }
     }
 }

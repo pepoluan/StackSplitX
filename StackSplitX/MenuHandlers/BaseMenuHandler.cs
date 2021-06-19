@@ -23,9 +23,6 @@ namespace StackSplitX.MenuHandlers
 
         /// <summary>Mod helper.</summary>
         protected readonly IModHelper Helper;
-        
-        /// <summary>Monitor for logging.</summary>
-        protected readonly IMonitor Monitor;
 
         /// <summary>Does this menu have an inventory section.</summary>
         protected bool HasInventory { get; set; } = true;
@@ -43,7 +40,6 @@ namespace StackSplitX.MenuHandlers
         public BaseMenuHandler(IModHelper helper, IMonitor monitor)
         {
             this.Helper = helper;
-            this.Monitor = monitor;
             this.Inventory = new InventoryHandler(helper.Reflection, monitor);
         }
 
@@ -138,11 +134,11 @@ namespace StackSplitX.MenuHandlers
                     //   1) https://stardewvalleywiki.com/Modding:Migrate_to_Stardew_Valley_1.5#UI_scale_changes
                     //   2) https://stardewvalleywiki.com/Modding:Modder_Guide/Game_Fundamentals#UI_scaling
                     this.ClickItemLocation = new Point(Game1.getOldMouseX(true), Game1.getOldMouseY(true));
-                    Monitor.Log($"BaseMenuHandler.HandleInput.ClickItemLocation = {ClickItemLocation}");
+                    Log.Trace($"BaseMenuHandler.HandleInput.ClickItemLocation = {ClickItemLocation}");
 
                     // Notify the handler the inventory was clicked.
                     if (this.HasInventory && !this.Inventory.Initialized)
-                        this.Monitor.Log("Handler has inventory but inventory isn't initialized.", LogLevel.Trace);
+                        Log.Trace("Handler has inventory but inventory isn't initialized.");
                     if (this.HasInventory && this.Inventory.Initialized && this.Inventory.WasClicked(Game1.getMouseX(), Game1.getMouseY()))
                     {
                         return InventoryClicked();
@@ -252,7 +248,7 @@ namespace StackSplitX.MenuHandlers
             }
             catch (Exception e)
             {
-                this.Monitor.Log($"Failed to initialize the inventory handler: {e}", LogLevel.Error);
+                Log.Error($"Failed to initialize the inventory handler: {e}");
             }
         }
 

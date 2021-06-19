@@ -18,8 +18,8 @@ namespace StackSplitX.MenuHandlers
         /// <param name="monitor">Monitor for logging.</param>
         /// <param name="menu">The native shop menu.</param>
         /// <param name="item">The item to buy.</param>
-        public BuyAction(IReflectionHelper reflection, IMonitor monitor, ShopMenu menu, ISalable item)
-            : base(reflection, monitor, menu, item)
+        public BuyAction(IReflectionHelper reflection, ShopMenu menu, ISalable item)
+            : base(reflection, menu, item)
         {
             // Default amount
             this.Amount = DefaultShopStackAmount;
@@ -58,7 +58,7 @@ namespace StackSplitX.MenuHandlers
             int overflow = Math.Max((numHeld + amount) - this.ClickedItem.maximumStackSize(), 0);
             amount -= overflow;
 
-            this.Monitor.DebugLog($"Attempting to purchase {amount} of {this.ClickedItem.Name} for {itemPrice * amount}");
+            Log.TraceIfD($"Attempting to purchase {amount} of {this.ClickedItem.Name} for {itemPrice * amount}");
 
             if (amount <= 0)
                 return;
@@ -68,7 +68,7 @@ namespace StackSplitX.MenuHandlers
             int index = BuyAction.GetClickedItemIndex(this.Reflection, this.NativeShopMenu, clickLocation);
             if (purchaseMethodInfo.Invoke<bool>(this.ClickedItem, heldItem, amount, clickLocation.X, clickLocation.Y, index))
             {
-                this.Monitor.DebugLog($"Purchase of {this.ClickedItem.Name} successful");
+                Log.TraceIfD($"Purchase of {this.ClickedItem.Name} successful");
 
                 // remove the purchased item from the stock etc.
                 priceAndStockMap.Remove(this.ClickedItem);
@@ -112,10 +112,10 @@ namespace StackSplitX.MenuHandlers
         /// <param name="shopMenu">Native shop menu.</param>
         /// <param name="mouse">Mouse position.</param>
         /// <returns>The instance or null if no valid item was selected.</returns>
-        public new static ShopAction Create(IReflectionHelper reflection, IMonitor monitor, ShopMenu shopMenu, Point mouse)
+        public static ShopAction Create(IReflectionHelper reflection, ShopMenu shopMenu, Point mouse)
         {
             var item = BuyAction.GetClickedShopItem(reflection, shopMenu, mouse);
-            return item != null ? new BuyAction(reflection, monitor, shopMenu, item) : null;
+            return item != null ? new BuyAction(reflection, shopMenu, item) : null;
         }
     }
 }

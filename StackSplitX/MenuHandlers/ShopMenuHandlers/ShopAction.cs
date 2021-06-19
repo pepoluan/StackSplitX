@@ -10,9 +10,6 @@ namespace StackSplitX.MenuHandlers
     {
         /// <summary>Reflection helper.</summary>
         protected readonly IReflectionHelper Reflection;
-        
-        /// <summary>Monitor for logging.</summary>
-        protected readonly IMonitor Monitor;
 
         /// <summary>Native shope menu.</summary>
         protected ShopMenu NativeShopMenu { get; private set; }
@@ -38,10 +35,9 @@ namespace StackSplitX.MenuHandlers
         /// <param name="monitor">Monitor.</param>
         /// <param name="menu">Native shop menu.</param>
         /// <param name="item">Clicked item that this action will act on.</param>
-        public ShopAction(IReflectionHelper reflection, IMonitor monitor, ShopMenu menu, ISalable item)
+        public ShopAction(IReflectionHelper reflection, ShopMenu menu, ISalable item)
         {
             this.Reflection = reflection;
-            this.Monitor = monitor;
             this.NativeShopMenu = menu;
             this.ClickedItem = (Item)item;
 
@@ -52,7 +48,7 @@ namespace StackSplitX.MenuHandlers
             }
             catch (Exception e)
             {
-                this.Monitor.Log($"Failed to get native shop data: {e}", LogLevel.Error);
+                Log.Error($"Failed to get native shop data: {e}");
             }
         }
 
